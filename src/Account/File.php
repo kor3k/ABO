@@ -2,90 +2,92 @@
 
 namespace snoblucha\Abo\Account;
 
+use InvalidArgumentException;
 use snoblucha\Abo\Group;
+use snoblucha\Abo\Item;
 
-class File {
-	
-	const UHRADA = 1501; 
-	const INKASO = 1502;
-	 
-	private $number = 0;
-	private $type = self::UHRADA;
-	private $bank = 0;
-	private $bankDepartment = 0;
-	
-	private $items = array();
-	
-	public function __construct($type = self::UHRADA){
+class File
+{
+	const TYPE_UHRADA = 1501;
+	const TYPE_INKASO = 1502;
+	const UHRADA = self::TYPE_UHRADA; // BC
+	const INKASO = self::TYPE_INKASO; // BC
+
+
+	private int $number = 0;
+	private int $type = self::TYPE_UHRADA;
+	private int $bank = 0;
+	private int $bankDepartment = 0;
+
+	/** @var Item[] */
+	private array $items = [];
+
+
+	public function __construct(int $type = self::TYPE_UHRADA)
+	{
 		$this->type = $type;
 	}
-	
-	/**
-	 * 
-	 * Generate string, 
-	 * @return string
-	 */
-	public function generate(){
-		$res = sprintf("1 %04d %03d%03d %04d\r\n",$this->type, $this->number, $this->bankDepartment, $this->bank);
+
+
+	public function generate(string $senderBank = ''): string
+	{
+		$res = sprintf("1 %04d %03d%03d %04d\r\n", $this->type, $this->number, $this->bankDepartment, $this->bank);
 		foreach ($this->items as $item) {
-			$res.= $item->generate();			
+			$res .= $item->generate(true, $senderBank);
 		}
 		$res .= "5 +\r\n";
 		return $res;
 	}
-	
-	/**
-	 * 
-	 * Set the bank deparment - pobocka. 0 in general
-	 * @param int $number
-	 * @return File
-	 */
-	public function setBankDepartment($number){
+
+
+	public function setBankDepartment(int $number): self
+	{
 		$this->bankDepartment = $number;
 		return $this;
 	}
-	
+
+
 	/**
-	 * 
-	 * set number of file. Should be called only from abo
-	 * @param unknown_type $number
-	 * @return File
+	 * Set number of file. Should be called only from abo.
 	 */
-	public function setNumber($number) {
+	public function setNumber(int $number): self
+	{
 		$this->number = $number;
 		return $this;
 	}
-	
-	/**
-	 * 
-	 * Nastavit typ
-	 * @param int $type 1501 - uhrady, 1502 - inkasa
-	 
-	 */
-	public function setType($type){
+
+
+	public function setType(int $type): self
+	{
+		$allowed = [self::TYPE_UHRADA, self::TYPE_INKASO];
+		if (!in_array($type, $allowed, true)) {
+			throw new InvalidArgumentException('Parameter $type has invalid value, given: ' . $type);
+		}
 		$this->type = $type;
 		return $this;
 	}
-	
-	/**	 
-	 * nastavit kod banky, ktere se dany soubor tyka(ktere to posilame?)
-	 * 
+
+
+	/**
+	 * nastavit kod banky, ktere se dany soubor tyka(ktere to posilame?).
 	 * @param int/string $bankCode kod banky
-	 * @return File
 	 */
-	public function setBank($bankCode){
+	public function setBank($bankCode): self
+	{
 		$this->bank = $bankCode;
 		return $this;
 	}
-	
+
+
 	/**
-	 * Add a group to item and return it to set up
-	 * 
-	 * @return Group
+	 * Add a group to item and return it to set up.
 	 */
-	public function addGroup(){
+	public function addGroup(): Group
+	{
 		$item = new Group();
 		$this->items[] = $item;
 		return $item;
 	}
+
+
 }
