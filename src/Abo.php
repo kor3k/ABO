@@ -17,8 +17,8 @@ class Abo
 	private ?string $organization = null;
 	private ?string $date = null;
 	private ?string $clientNumber = null;
-	private ?string $fixedKeyPart = null;
-	private ?string $securityCode = null;
+	private ?string $securityCodeFixedPart = null;
+	private ?string $securityCodeSecretPart = null;
 	private string $senderBank = '';
 
 
@@ -57,15 +57,15 @@ class Abo
 	/**
 	 * Optional part of the header. Set the Fixed key part and security code.
 	 * @param string $fixed 6 numbers
-	 * @param string $securityCode 6 numbers
+	 * @param string $secret 6 numbers
 	 */
-	public function setSecurityKey(string $fixed, string $securityCode): self
+	public function setSecurityKey(string $fixed, string $secret): self
 	{
-		if (!is_numeric($fixed) || !is_numeric($securityCode) || strlen($fixed) !== 6 || strlen($securityCode) !== 6) {
-			throw new InvalidArgumentException('Parameters $fixed and $securityCode must be numeric strings of length 6!');
+		if (!is_numeric($fixed) || !is_numeric($secret) || strlen($fixed) !== 6 || strlen($secret) !== 6) {
+			throw new InvalidArgumentException('Parameters $fixed and $secret must be numeric strings of length 6!');
 		}
-		$this->fixedKeyPart = $fixed;
-		$this->securityCode = $securityCode;
+		$this->securityCodeFixedPart = $fixed;
+		$this->securityCodeSecretPart = $secret;
 		return $this;
 	}
 
@@ -112,9 +112,9 @@ class Abo
 
 	public function generate(): string
 	{
-		$res = sprintf("%s%s% -20s%010d%03d%03d", self::HEADER, $this->date, $this->organization, $this->clientNumber, 1, 1 + count($this->items));
-		if ($this->securityCode) {
-			$res .= sprintf("%06d%06d", $this->fixedKeyPart, $this->securityCode);
+		$res = sprintf("%s%s%-20s%010d%03d%03d", self::HEADER, $this->date, $this->organization, $this->clientNumber, 1, 1 + count($this->items));
+		if ($this->securityCodeSecretPart) {
+			$res .= sprintf("%06d%06d", $this->securityCodeFixedPart, $this->securityCodeSecretPart);
 		}
 		$res .= "\r\n";
 
