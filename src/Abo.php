@@ -2,6 +2,8 @@
 
 namespace snoblucha\Abo;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use snoblucha\Abo\Account\File;
 
 class Abo
@@ -12,7 +14,7 @@ class Abo
 	/** @var File[] */
 	private array $items = [];
 	private ?string $organization;
-	private ?string $date;
+	private ?string $date = null;
 	private int $comittent_number = 0;
 	private ?string $fixedKeyPart = null;
 	private ?string $securityCode = null;
@@ -59,16 +61,12 @@ class Abo
 	}
 
 
-	/**
-	 * Set date of file
-	 * @param string $date format DDMMYY
-	 */
-	public function setDate(?string $date = null): self
+	public function setDate(?DateTimeInterface $date = null): self
 	{
 		if ($date == null) {
-			$date = date('dmy');
+			$date = new DateTimeImmutable();
 		}
-		$this->date = $date;
+		$this->date = $date->format('dmy');
 		return $this;
 	}
 

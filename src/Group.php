@@ -2,6 +2,9 @@
 
 namespace snoblucha\Abo;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+
 /**
  * Class Group
  * @package snoblucha\Abo
@@ -13,7 +16,7 @@ class Group
 
 	/** @var Item[] */
 	private array $items = [];
-	private ?string $dueDate;
+	private ?string $dueDate = null;
 
 
 	public function generate(string $senderBank = ''): string
@@ -22,8 +25,9 @@ class Group
 		if ($this->account_number != null) {
 			$res .= Abo::account($this->account_number, $this->account_pre_number) . " ";
 		}
-		if ($this->dueDate == null)
+		if ($this->dueDate == null) {
 			$this->setDate(); //date is not set, so today is the day
+		}
 		$res .= sprintf("%014d %s", $this->getAmount(), $this->dueDate);
 		$res .= "\r\n";
 		foreach ($this->items as $item) {
@@ -37,11 +41,12 @@ class Group
 	/**
 	 * Set date of the execution.
 	 */
-	public function setDate(?string $date = null): self
+	public function setDate(?DateTimeInterface $date = null): self
 	{
-		if ($date == null)
-			$date = date('dmy');
-		$this->dueDate = $date;
+		if ($date == null) {
+			$date = new DateTimeImmutable();
+		}
+		$this->dueDate = $date->format('dmy');
 		return $this;
 	}
 
