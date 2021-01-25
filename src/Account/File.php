@@ -16,10 +16,10 @@ class File
 
 	private int $number = 0;
 	private int $type = self::TYPE_UHRADA;
-	private int $bank = 0;
-	private int $bankDepartment = 0;
+	private string $bankCode;
+	private string $bankDepartment = '000';
 
-	/** @var Item[] */
+	/** @var Group[] */
 	private array $items = [];
 
 
@@ -31,7 +31,7 @@ class File
 
 	public function generate(string $senderBank = ''): string
 	{
-		$res = sprintf("1 %04d %03d%03d %04d\r\n", $this->type, $this->number, $this->bankDepartment, $this->bank);
+		$res = sprintf("1 %04d %03d%03d %04d\r\n", $this->type, $this->number, $this->bankDepartment, $this->bankCode);
 		foreach ($this->items as $item) {
 			$res .= $item->generate(true, $senderBank);
 		}
@@ -40,15 +40,20 @@ class File
 	}
 
 
-	public function setBankDepartment(int $number): self
+	public function setBankDepartment(string $number): self
 	{
+		$len = 3;
+		if (strlen($number) !== $len || !is_numeric($number)) {
+			throw new InvalidArgumentException("Parameter \$number must be numeric and $len characters long");
+		}
 		$this->bankDepartment = $number;
 		return $this;
 	}
 
 
 	/**
-	 * Set number of file. Should be called only from abo.
+	 * Set number of file.
+	 * @internal Should be called only from Abo::addAccountFile().
 	 */
 	public function setNumber(int $number): self
 	{
@@ -69,12 +74,15 @@ class File
 
 
 	/**
-	 * nastavit kod banky, ktere se dany soubor tyka(ktere to posilame?).
-	 * @param int/string $bankCode kod banky
+	 * Set recipient bank code.
 	 */
-	public function setBank($bankCode): self
+	public function setBankCode(string $bankCode): self
 	{
-		$this->bank = $bankCode;
+		$len = 4;
+		if (strlen($bankCode) !== $len || !is_numeric($bankCode)) {
+			throw new InvalidArgumentException("Parameter \$bankCode must be numeric and $len characters long");
+		}
+		$this->bankCode = $bankCode;
 		return $this;
 	}
 
