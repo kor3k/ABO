@@ -5,10 +5,10 @@ namespace snoblucha\Abo;
 class Item
 {
 	// in cents/halere
-	private int $amount;
-	private string $varSym;
-	private string $specSym;
-	private string $constSym;
+	private int $amount = 0;
+	private string $varSym = '';
+	private string $specSym = '';
+	private string $constSym = '';
 	private string $bankCode = '';
 	private string $accountNumber = '';
 	private string $accountPrefix = '';
