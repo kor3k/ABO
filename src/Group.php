@@ -11,19 +11,19 @@ use DateTimeInterface;
  */
 class Group
 {
-	private ?string $account_number;
-	private ?string $account_pre_number;
+	private ?string $accountNumber;
+	private ?string $accountPrefix;
 
 	/** @var Item[] */
 	private array $items = [];
 	private ?string $dueDate = null;
 
 
-	public function generate(string $senderBank = ''): string
+	public function generate(string $senderBankCode = ''): string
 	{
 		$res = "2 ";
-		if ($this->account_number != null) {
-			$res .= Abo::account($this->account_number, $this->account_pre_number) . " ";
+		if ($this->accountNumber != null) {
+			$res .= Abo::formatAccountNumber($this->accountNumber, $this->accountPrefix) . " ";
 		}
 		if ($this->dueDate == null) {
 			$this->setDate(); //date is not set, so today is the day
@@ -31,7 +31,7 @@ class Group
 		$res .= sprintf("%014d %s", $this->getAmount(), $this->dueDate);
 		$res .= "\r\n";
 		foreach ($this->items as $item) {
-			$res .= $item->generate($this->account_number != null, $senderBank);
+			$res .= $item->generate($this->accountNumber != null, $senderBankCode);
 		}
 		$res .= "3 +\r\n";
 		return $res;
@@ -53,29 +53,24 @@ class Group
 
 	/**
 	 * Set the account for the full group. The account will not be rendered in items
-	 * Optional item! Account that is used on one side (Our)
 	 */
-	public function setAccount(string $number, string $pre = null): void
+	public function setAccount(string $number, string $prefix = null): void
 	{
-		$this->account_number = $number;
-		$this->account_pre_number = $pre;
+		$this->accountNumber = $number;
+		$this->accountPrefix = $prefix;
 	}
 
 
-	/**
-	 * adds abo_item to group. and returns it for set up/
-	 * @return Item
-	 */
-	public function addItem(string $account_number, float $amount, string $variable_sym): Item
+	public function addItem(string $fullAccountNumber, float $amount, string $varSym): Item
 	{
-		$item = new Item($account_number, $amount, $variable_sym);
+		$item = new Item($fullAccountNumber, $amount, $varSym);
 		$this->items[] = $item;
 		return $item;
 	}
 
 
 	/**
-	 * Get the amount in halere
+	 * Get the amount in halere.
 	 */
 	public function getAmount(): int
 	{

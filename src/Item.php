@@ -4,28 +4,29 @@ namespace snoblucha\Abo;
 
 class Item
 {
+	// in cents/halere
 	private int $amount;
-	private string $variable_sym;
-	private string $spec_sym;
-	private string $const_sym;
-	private string $bank = '';
-	private string $account_number = '';
-	private string $account_pre = '';
-	private string $dest_account = '';
-	private string $dest_account_pre = '';
+	private string $varSym;
+	private string $specSym;
+	private string $constSym;
+	private string $bankCode = '';
+	private string $accountNumber = '';
+	private string $accountPrefix = '';
+	private string $destAccount = '';
+	private string $destAccountPrefix = '';
 	private string $message = '';
 
 
-	public function __construct(string $full_account_number, float $amount, string $variable_sym)
+	public function __construct(string $fullAccountNumber, float $amount, string $varSym)
 	{
-		$this->setAmount($amount)->setAccount($full_account_number)->setVarSym($variable_sym);
+		$this->setAmount($amount)->setAccount($fullAccountNumber)->setVarSym($varSym);
 	}
 
 
 	/**
-	 * Set the amount to transfer
-	 * @param float $float
-	 * @param boolean $halere amount is in halere
+	 * Set the amount to transfer.
+	 * @param float $amount
+	 * @param bool $halere is $amount in halere?
 	 */
 	public function setAmount(float $amount, bool $halere = false): self
 	{
@@ -37,25 +38,25 @@ class Item
 	}
 
 
-	public function getAmount()
+	public function getAmount(): int
 	{
 		return $this->amount;
 	}
 
 
 	/**
-	 * @param string $account - account in format (xxxx-)xxxxxxxx/xxxx
+	 * @param string $fullAccountNumber in format (xxxx-)xxxxxxxx/xxxx
 	 */
-	public function setAccount(string $account): self
+	public function setAccount(string $fullAccountNumber): self
 	{
-		$account = explode('/', $account);
-		$this->bank = $account[1];
+		$account = explode('/', $fullAccountNumber);
+		$this->bankCode = $account[1];
 		if (strpos($account[0], '-') !== false) {
 			$number = explode('-', $account[0]);
-			$this->account_pre = $number[0];
-			$this->account_number = $number[1];
+			$this->accountPrefix = $number[0];
+			$this->accountNumber = $number[1];
 		} else {
-			$this->account_number = $account[0];
+			$this->accountNumber = $account[0];
 		}
 
 		return $this;
@@ -63,18 +64,18 @@ class Item
 
 
 	/**
-	 * @param string $account in format (xxxx-)xxxxxx/xxxx
+	 * @param string $fullAccountNumber in format (xxxx-)xxxxxx/xxxx
 	 */
-	public function setDestAccount(string $account): self
+	public function setDestAccount(string $fullAccountNumber): self
 	{
-		$account = explode('/', $account);
-		//$this->bank = $account[1]; //ba
+		$account = explode('/', $fullAccountNumber);
+		//$this->destBankCode = $account[1];
 		if (strpos($account[0], '-') !== false) {
 			$number = explode('-', $account[0]);
-			$this->dest_account_pre = $number[0];
-			$this->dest_account = $number[1];
+			$this->destAccountPrefix = $number[0];
+			$this->destAccount = $number[1];
 		} else {
-			$this->account_number = $account[0];
+			$this->destAccount = $account[0];
 		}
 
 		return $this;
@@ -83,26 +84,26 @@ class Item
 
 	public function setVarSym(string $varSym): self
 	{
-		$this->variable_sym = $varSym;
+		$this->varSym = $varSym;
 		return $this;
 	}
 
 
 	public function setConstSym(string $constSym): self
 	{
-		$this->const_sym = $constSym;
+		$this->constSym = $constSym;
 		return $this;
 	}
 
 
 	public function setSpecSym(string $specSym): self
 	{
-		$this->spec_sym = $specSym;
+		$this->specSym = $specSym;
 		return $this;
 	}
 
 
-	public function setMessage(/* string */$message): self
+	public function setMessage(/* string|array */$message): self
 	{
 		if (is_array($message)) {
 			$message = implode(' AV|', $message);
@@ -113,20 +114,20 @@ class Item
 
 
 	/**
-	 * @param boolean $supress_number if the destination number is in the group header
-	 * @param string $senderBank
+	 * @param boolean $supressNumber if the destination number is in the group header
+	 * @param string $senderBankCode
 	 * @return string
 	 */
-	public function generate(bool $supress_number = true, string $senderBank = ''): string
+	public function generate(bool $supressNumber = true, string $senderBankCode = ''): string
 	{
 		$res = '';
-		if (!$supress_number) {
-			$res .= Abo::account($this->dest_account, $this->dest_account_pre) . ' ';
+		if (!$supressNumber) {
+			$res .= Abo::formatAccountNumber($this->destAccount, $this->destAccountPrefix) . ' ';
 		}
-		$res .= sprintf("%s %d %s %s%04d ", Abo::account($this->account_number, $this->account_pre), $this->amount, $this->variable_sym, $this->bank, $this->const_sym);
+		$res .= sprintf("%s %d %s %s%04d ", Abo::formatAccountNumber($this->accountNumber, $this->accountPrefix), $this->amount, $this->varSym, $this->bankCode, $this->constSym);
 
-		$res .= (strlen($this->spec_sym) ? $this->spec_sym : ($senderBank == '6800' ? '' : ' ')) . ' ';
-		$res .= ($this->message ? substr('AV:' . $this->message, 0, 38) : ' ');
+		$res .= (strlen($this->specSym) ? $this->specSym : ($senderBankCode == '6800' ? '' : ' ')) . ' ';
+		$res .= ($this->message ? substr('AV:' . $this->message, 0, 35) : ' ');
 		$res .= "\r\n";
 
 		return $res;

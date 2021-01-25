@@ -19,7 +19,7 @@ class Abo
 	private ?string $clientNumber = null;
 	private ?string $securityCodeFixedPart = null;
 	private ?string $securityCodeSecretPart = null;
-	private string $senderBank = '';
+	private string $senderBankCode = '';
 
 
 	public function __construct(string $organization = "")
@@ -30,7 +30,7 @@ class Abo
 
 
 	/**
-	 * Set the organization name. Less then 20 chars.
+	 * Set the sender organization name. Less then 20 chars.
 	 */
 	public function setOrganization(string $organization, bool $truncate = false)
 	{
@@ -47,9 +47,9 @@ class Abo
 	}
 
 
-	public function setSenderBank(string $bankCode): self
+	public function setSenderBankCode(string $bankCode): self
 	{
-		$this->senderBank = $bankCode;
+		$this->senderBankCode = $bankCode;
 		return $this;
 	}
 
@@ -112,27 +112,35 @@ class Abo
 
 	public function generate(): string
 	{
-		$res = sprintf("%s%s%-20s%010d%03d%03d", self::HEADER, $this->date, $this->organization, $this->clientNumber, 1, 1 + count($this->items));
+		$res = sprintf("%4s%6s%-20s%010d%03d%03d", self::HEADER, $this->date, $this->organization, $this->clientNumber, 1, 1 + count($this->items));
 		if ($this->securityCodeSecretPart) {
 			$res .= sprintf("%06d%06d", $this->securityCodeFixedPart, $this->securityCodeSecretPart);
 		}
 		$res .= "\r\n";
 
 		foreach ($this->items as $item) {
-			$res .= $item->generate($this->senderBank);
+			$res .= $item->generate($this->senderBankCode);
 		}
 
 		return $res;
 	}
 
 
-	public static function account(string $number, string $pre = null): string
+	public static function formatAccountNumber(string $number, string $prefix = null): string
 	{
 		$res = '';
-		if ($pre) {
-			$res .= sprintf("%s-", $pre);
+		if ($prefix) {
+			if (!is_numeric($prefix) || strlen($prefix) > 6) {
+				throw new InvalidArgumentException('Parameter $prefix must be numeric string of max length 6!');
+			}
+			$res .= $prefix . '-';
 		}
-		$res .= sprintf("%s", $number);
+		if (!is_numeric($number) || strlen($prefix) > 10) {
+			throw new InvalidArgumentException('Parameter $number must be numeric string of max length 10!');
+		}
+
+//		$res .= sprintf('%010d', $number);
+		$res .= $number;
 		return $res;
 	}
 
