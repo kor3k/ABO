@@ -115,10 +115,9 @@ class Item
 
 	/**
 	 * @param boolean $supressNumber if the destination number is in the group header
-	 * @param string $senderBankCode
 	 * @return string
 	 */
-	public function generate(bool $supressNumber = true, string $senderBankCode = ''): string
+	public function generate(bool $supressNumber = true): string
 	{
 		$res = '';
 		if (!$supressNumber) {
@@ -126,7 +125,6 @@ class Item
 		}
 		$res .= sprintf("%s %d %s %s%04d ", Abo::formatAccountNumber($this->accountNumber, $this->accountPrefix), $this->amount, $this->varSym, $this->bankCode, $this->constSym);
 
-//		$res .= ($this->specSym ?: ($senderBankCode == '6800' ? '' : ' ')) . ' ';
 		$res .= ($this->specSym ?: '') . ' ';
 		$res .= ($this->message ? substr('AV:' . $this->message, 0, 35) : ' ');
 		$res .= "\r\n";

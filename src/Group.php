@@ -19,7 +19,7 @@ class Group
 	private ?string $dueDate = null;
 
 
-	public function generate(string $senderBankCode = ''): string
+	public function generate(): string
 	{
 		$res = "2 ";
 		if ($this->accountNumber != null) {
@@ -31,7 +31,7 @@ class Group
 		$res .= sprintf("%014d %s", $this->getAmount(), $this->dueDate);
 		$res .= "\r\n";
 		foreach ($this->items as $item) {
-			$res .= $item->generate($this->accountNumber != null, $senderBankCode);
+			$res .= $item->generate($this->accountNumber != null);
 		}
 		$res .= "3 +\r\n";
 		return $res;

@@ -29,11 +29,11 @@ class File
 	}
 
 
-	public function generate(string $senderBankCode = ''): string
+	public function generate(): string
 	{
 		$res = sprintf("1 %04d %03d%03d %04d\r\n", $this->type, $this->number, $this->bankDepartment, $this->bankCode);
 		foreach ($this->items as $group) {
-			$res .= $group->generate($senderBankCode);
+			$res .= $group->generate();
 		}
 		$res .= "5 +\r\n";
 		return $res;

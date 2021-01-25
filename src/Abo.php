@@ -19,7 +19,6 @@ class Abo
 	private ?string $clientNumber = null;
 	private ?string $securityCodeFixedPart = null;
 	private ?string $securityCodeSecretPart = null;
-	private string $senderBankCode = '';
 
 
 	public function __construct(string $organization = "")
@@ -43,13 +42,6 @@ class Abo
 			}
 		}
 		$this->organization = strtoupper($organization);
-		return $this;
-	}
-
-
-	public function setSenderBankCode(string $bankCode): self
-	{
-		$this->senderBankCode = $bankCode;
 		return $this;
 	}
 
@@ -119,7 +111,7 @@ class Abo
 		$res .= "\r\n";
 
 		foreach ($this->items as $item) {
-			$res .= $item->generate($this->senderBankCode);
+			$res .= $item->generate();
 		}
 
 		return $res;
