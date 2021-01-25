@@ -80,7 +80,7 @@ class Abo
 	}
 
 
-	public function setClientNumer(string $number): self
+	public function setClientNumber(string $number): self
 	{
 		$len = 10;
 		if (!is_numeric($number) || strlen($number) > $len) {
