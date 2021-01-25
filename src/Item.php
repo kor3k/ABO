@@ -103,12 +103,12 @@ class Item
 	}
 
 
-	public function setMessage(/* string|array */$message): self
+	public function setMessage(string $message): self
 	{
-		if (is_array($message)) {
-			$message = implode(' AV|', $message);
-		}
-		$this->message = $message;
+		$lines = 4;
+		$maxLineLen = 35;
+		$message = substr($message, 0, $lines * $maxLineLen);
+		$this->message = rtrim(chunk_split($message, $maxLineLen, '|'), '| ');
 		return $this;
 	}
 
@@ -125,8 +125,8 @@ class Item
 		}
 		$res .= sprintf("%s %d %s %s%04d ", Abo::formatAccountNumber($this->accountNumber, $this->accountPrefix), $this->amount, $this->varSym, $this->bankCode, $this->constSym);
 
-		$res .= ($this->specSym ?: '') . ' ';
-		$res .= ($this->message ? substr('AV:' . $this->message, 0, 35) : ' ');
+		$res .= $this->specSym . ' ';
+		$res .= $this->message ? ('AV:' . $this->message) : '';
 		$res .= "\r\n";
 
 		return $res;
