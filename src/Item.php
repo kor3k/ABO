@@ -126,7 +126,8 @@ class Item
 		}
 		$res .= sprintf("%s %d %s %s%04d ", Abo::formatAccountNumber($this->accountNumber, $this->accountPrefix), $this->amount, $this->varSym, $this->bankCode, $this->constSym);
 
-		$res .= (strlen($this->specSym) ? $this->specSym : ($senderBankCode == '6800' ? '' : ' ')) . ' ';
+//		$res .= ($this->specSym ?: ($senderBankCode == '6800' ? '' : ' ')) . ' ';
+		$res .= ($this->specSym ?: '') . ' ';
 		$res .= ($this->message ? substr('AV:' . $this->message, 0, 35) : ' ');
 		$res .= "\r\n";
 
