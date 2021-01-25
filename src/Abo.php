@@ -4,6 +4,7 @@ namespace snoblucha\Abo;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use InvalidArgumentException;
 use snoblucha\Abo\Account\File;
 
 class Abo
@@ -13,7 +14,7 @@ class Abo
 
 	/** @var File[] */
 	private array $items = [];
-	private ?string $organization;
+	private ?string $organization = null;
 	private ?string $date = null;
 	private int $comittent_number = 0;
 	private ?string $fixedKeyPart = null;
@@ -31,9 +32,17 @@ class Abo
 	/**
 	 * Set the organization name. Less then 20 chars.
 	 */
-	public function setOrganization(string $organization)
+	public function setOrganization(string $organization, bool $truncate = false)
 	{
-		$this->organization = $organization;
+		$maxLen = 20;
+		if (strlen($organization) > $maxLen) {
+			if ($truncate) {
+				$organization = substr($organization, 0, $maxLen);
+			} else {
+				throw new InvalidArgumentException("Parameter \$organization must be max $maxLen characters long");
+			}
+		}
+		$this->organization = strtoupper($organization);
 		return $this;
 	}
 
