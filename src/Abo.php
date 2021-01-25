@@ -16,7 +16,7 @@ class Abo
 	private array $items = [];
 	private ?string $organization = null;
 	private ?string $date = null;
-	private int $comittent_number = 0;
+	private ?string $clientNumber = null;
 	private ?string $fixedKeyPart = null;
 	private ?string $securityCode = null;
 	private string $senderBank = '';
@@ -80,9 +80,13 @@ class Abo
 	}
 
 
-	public function setComittentNumer(int $number): self
+	public function setClientNumer(string $number): self
 	{
-		$this->comittent_number = $number;
+		$len = 10;
+		if (!is_numeric($number) || strlen($number) > $len) {
+			throw new InvalidArgumentException("Parameter \$number must be numeric string of max length $len!");
+		}
+		$this->clientNumber = str_pad($number, $len, '0', STR_PAD_LEFT);
 		return $this;
 	}
 
@@ -108,7 +112,7 @@ class Abo
 
 	public function generate(): string
 	{
-		$res = sprintf("%s%s% -20s%010d%03d%03d", self::HEADER, $this->date, $this->organization, $this->comittent_number, 1, 1 + count($this->items));
+		$res = sprintf("%s%s% -20s%010d%03d%03d", self::HEADER, $this->date, $this->organization, $this->clientNumber, 1, 1 + count($this->items));
 		if ($this->securityCode) {
 			$res .= sprintf("%06d%06d", $this->fixedKeyPart, $this->securityCode);
 		}
