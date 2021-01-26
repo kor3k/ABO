@@ -141,7 +141,7 @@ class Item
 	{
 		$lines = 4;
 		$maxLineLen = 35;
-		$msg = substr($msg, 0, $lines * $maxLineLen);
+		$msg = substr(Utils::toAscii($msg), 0, $lines * $maxLineLen);
 		$this->message = rtrim(chunk_split($msg, $maxLineLen, '|'), '| ');
 		return $this;
 	}
@@ -155,9 +155,9 @@ class Item
 	{
 		$res = '';
 		if (!$omitSenderAccount) {
-			$res .= Abo::formatAccountNumber($this->senderAccountNumber, $this->senderAccountPrefix) . ' ';
+			$res .= Utils::formatAccountNumber($this->senderAccountNumber, $this->senderAccountPrefix) . ' ';
 		}
-		$res .= sprintf("%s %d %s %s%04d %s ", Abo::formatAccountNumber($this->accountNumber, $this->accountPrefix), $this->amount, $this->varSym, $this->bankCode, $this->constSym, $this->specSym);
+		$res .= sprintf("%s %d %s %s%04d %s ", Utils::formatAccountNumber($this->accountNumber, $this->accountPrefix), $this->amount, $this->varSym, $this->bankCode, $this->constSym, $this->specSym);
 		$res .= $this->message ? ('AV:' . $this->message) : '';
 		$res .= "\r\n";
 

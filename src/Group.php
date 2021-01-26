@@ -65,7 +65,7 @@ class Group
 	{
 		$res = "2 ";
 		if ($this->senderAccountNumber !== null) {
-			$res .= Abo::formatAccountNumber($this->senderAccountNumber, $this->semderAccountPrefix) . " ";
+			$res .= Utils::formatAccountNumber($this->senderAccountNumber, $this->semderAccountPrefix) . " ";
 		}
 		if ($this->dueDate === null) {
 			$this->setDueDate();
