@@ -7,6 +7,7 @@ use snoblucha\Abo\Group;
 
 class File
 {
+	/** @type int 4 numbers */
 	const TYPE_UHRADA = 1501;
 	const TYPE_INKASO = 1502;
 

@@ -12,9 +12,6 @@ class Abo
 	const HEADER = 'UHL1';
 
 
-	/** @var File[] */
-	private array $items = [];
-
 	/** @var ?string 20 chars */
 	private ?string $organization = null;
 
@@ -29,6 +26,9 @@ class Abo
 
 	/** @var ?string 6 numbers */
 	private ?string $securityCodeSecretPart = null;
+
+	/** @var File[] */
+	private array $items = [];
 
 
 	public function __construct(string $organization = "")
@@ -58,7 +58,7 @@ class Abo
 
 	public function setDate(?DateTimeInterface $date = null): self
 	{
-		if ($date == null) {
+		if ($date === null) {
 			$date = new DateTimeImmutable();
 		}
 		$this->date = $date->format('dmy');
