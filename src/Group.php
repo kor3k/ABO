@@ -41,9 +41,8 @@ class Group
 	}
 
 
-	public function addItem(string $fullAccountNumber, float $amount, string $varSym): Item
+	public function addItem(Item $item): Item
 	{
-		$item = new Item($fullAccountNumber, $amount, $varSym);
 		$this->items[] = $item;
 		return $item;
 	}
