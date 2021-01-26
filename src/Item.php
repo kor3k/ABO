@@ -46,15 +46,13 @@ class Item
 	}
 
 
-	/**
-	 * Set the amount to transfer.
-	 * @param float $amount
-	 * @param bool $halere is $amount in halere?
-	 */
-	public function setAmount(float $amount, bool $halere = false): self
+	public function setAmount(float $amount, bool $convert2cents = true): self
 	{
-		if (!$halere) {
+		if ($convert2cents) {
 			$amount *= 100;
+		}
+		if ($amount !== floor($amount)) {
+			throw new InvalidArgumentException('Parameter $amount must be either whole number representing amount in cents or decimal number with 2 decimal places, given ' . $amount);
 		}
 		$this->amount = intval($amount);
 		return $this;
