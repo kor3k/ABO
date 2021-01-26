@@ -106,7 +106,7 @@ class Item
 	public function setVarSym(string $number): self
 	{
 		$len = 10;
-		if (!is_numeric($number) || strlen($number) > $len) {
+		if (!empty($number) && !is_numeric($number) || strlen($number) > $len) {
 			throw new InvalidArgumentException("Parameter \$number must be numeric string of max length $len!");
 		}
 		$this->varSym = $number;
@@ -117,7 +117,7 @@ class Item
 	public function setConstSym(string $number): self
 	{
 		$len = 4;
-		if (!is_numeric($number) || strlen($number) > $len) {
+		if (!empty($number) && !is_numeric($number) || strlen($number) > $len) {
 			throw new InvalidArgumentException("Parameter \$number must be numeric string of max length $len!");
 		}
 		$this->constSym = $number;
@@ -128,7 +128,7 @@ class Item
 	public function setSpecSym(string $number): self
 	{
 		$len = 10;
-		if (!is_numeric($number) || strlen($number) > $len) {
+		if (!empty($number) && !is_numeric($number) || strlen($number) > $len) {
 			throw new InvalidArgumentException("Parameter \$number must be numeric string of max length $len!");
 		}
 		$this->specSym = $number;
