@@ -2,24 +2,46 @@
 
 namespace snoblucha\Abo;
 
+use InvalidArgumentException;
+
 class Item
 {
-	// in cents/halere
-	private int $amount = 0;
-	private string $varSym = '';
-	private string $specSym = '';
-	private string $constSym = '';
-	private string $bankCode = '';
-	private string $accountNumber = '';
+	/** @var string recipient account prefix max 6 numbers */
 	private string $accountPrefix = '';
-	private string $destAccount = '';
-	private string $destAccountPrefix = '';
+
+	/** @var string recipient account number max 10 numbers */
+	private string $accountNumber = '';
+
+	/** @var string recipient bank code 4 numbers */
+	private string $bankCode = '';
+
+	/** @var int in cents/halere */
+	private int $amount = 0;
+
+	/** @var string max 10 numbers */
+	private string $varSym = '';
+
+	/** @var string max 10 numbers */
+	private string $specSym = '';
+
+	/** @var string max 4 numbers */
+	private string $constSym = '';
+
+	/** @var string max 4(lines)*35 chars */
 	private string $message = '';
+
+	/** @var string recipient account prefix max 6 numbers */
+	private string $senderAccountPrefix = '';
+
+	/** @var string recipient account number max 10 numbers */
+	private string $senderAccountNumber = '';
 
 
 	public function __construct(string $fullAccountNumber, float $amount, string $varSym)
 	{
-		$this->setAmount($amount)->setAccount($fullAccountNumber)->setVarSym($varSym);
+		$this->setAccount($fullAccountNumber)
+			->setAmount($amount)
+			->setVarSym($varSym);
 	}
 
 
@@ -45,7 +67,7 @@ class Item
 
 
 	/**
-	 * @param string $fullAccountNumber in format (xxxx-)xxxxxxxx/xxxx
+	 * @param string $fullAccountNumber in format (xxxxxx-)xxxxxxxxxx/xxxx
 	 */
 	public function setAccount(string $fullAccountNumber): self
 	{
@@ -64,68 +86,78 @@ class Item
 
 
 	/**
-	 * @param string $fullAccountNumber in format (xxxx-)xxxxxx/xxxx
+	 * @param string $fullAccountNumber in format (xxxxxx-)xxxxxxxx/xxxx
 	 */
-	public function setDestAccount(string $fullAccountNumber): self
+	public function setSenderAccount(string $fullAccountNumber): self
 	{
 		$account = explode('/', $fullAccountNumber);
-		//$this->destBankCode = $account[1];
+//		$this->senderBankCode = $account[1];
 		if (strpos($account[0], '-') !== false) {
 			$number = explode('-', $account[0]);
-			$this->destAccountPrefix = $number[0];
-			$this->destAccount = $number[1];
+			$this->senderAccountPrefix = $number[0];
+			$this->senderAccountNumber = $number[1];
 		} else {
-			$this->destAccount = $account[0];
+			$this->senderAccountNumber = $account[0];
 		}
 
 		return $this;
 	}
 
 
-	public function setVarSym(string $varSym): self
+	public function setVarSym(string $number): self
 	{
-		$this->varSym = $varSym;
+		$len = 10;
+		if (!is_numeric($number) || strlen($number) > $len) {
+			throw new InvalidArgumentException("Parameter \$number must be numeric string of max length $len!");
+		}
+		$this->varSym = $number;
 		return $this;
 	}
 
 
-	public function setConstSym(string $constSym): self
+	public function setConstSym(string $number): self
 	{
-		$this->constSym = $constSym;
+		$len = 4;
+		if (!is_numeric($number) || strlen($number) > $len) {
+			throw new InvalidArgumentException("Parameter \$number must be numeric string of max length $len!");
+		}
+		$this->constSym = $number;
 		return $this;
 	}
 
 
-	public function setSpecSym(string $specSym): self
+	public function setSpecSym(string $number): self
 	{
-		$this->specSym = $specSym;
+		$len = 10;
+		if (!is_numeric($number) || strlen($number) > $len) {
+			throw new InvalidArgumentException("Parameter \$number must be numeric string of max length $len!");
+		}
+		$this->specSym = $number;
 		return $this;
 	}
 
 
-	public function setMessage(string $message): self
+	public function setMessage(string $msg): self
 	{
 		$lines = 4;
 		$maxLineLen = 35;
-		$message = substr($message, 0, $lines * $maxLineLen);
-		$this->message = rtrim(chunk_split($message, $maxLineLen, '|'), '| ');
+		$msg = substr($msg, 0, $lines * $maxLineLen);
+		$this->message = rtrim(chunk_split($msg, $maxLineLen, '|'), '| ');
 		return $this;
 	}
 
 
 	/**
-	 * @param boolean $supressNumber if the destination number is in the group header
+	 * @param bool $omitSenderAccount true if the sender number is already in the group header
 	 * @return string
 	 */
-	public function generate(bool $supressNumber = true): string
+	public function generate(bool $omitSenderAccount): string
 	{
 		$res = '';
-		if (!$supressNumber) {
-			$res .= Abo::formatAccountNumber($this->destAccount, $this->destAccountPrefix) . ' ';
+		if (!$omitSenderAccount) {
+			$res .= Abo::formatAccountNumber($this->senderAccountNumber, $this->senderAccountPrefix) . ' ';
 		}
-		$res .= sprintf("%s %d %s %s%04d ", Abo::formatAccountNumber($this->accountNumber, $this->accountPrefix), $this->amount, $this->varSym, $this->bankCode, $this->constSym);
-
-		$res .= $this->specSym . ' ';
+		$res .= sprintf("%s %d %s %s%04d %s ", Abo::formatAccountNumber($this->accountNumber, $this->accountPrefix), $this->amount, $this->varSym, $this->bankCode, $this->constSym, $this->specSym);
 		$res .= $this->message ? ('AV:' . $this->message) : '';
 		$res .= "\r\n";
 
