@@ -8,10 +8,10 @@ use DateTimeInterface;
 class Group
 {
 	/** @var ?string max 6 numbers */
-	private ?string $accountPrefix = null;
+	private ?string $semderAccountPrefix = null;
 
 	/** @var ?string max 10 numbers */
-	private ?string $accountNumber = null;
+	private ?string $senderAccountNumber = null;
 
 	/** @var ?string format ddmmyy */
 	private ?string $dueDate = null;
@@ -23,10 +23,10 @@ class Group
 	/**
 	 * Set the account for the full group. The account will not be rendered in items.
 	 */
-	public function setAccount(string $number, string $prefix = null): void
+	public function setSenderAccount(string $number, string $prefix = null): void
 	{
-		$this->accountNumber = $number;
-		$this->accountPrefix = $prefix;
+		$this->senderAccountNumber = $number;
+		$this->semderAccountPrefix = $prefix;
 	}
 
 
@@ -64,8 +64,8 @@ class Group
 	public function generate(): string
 	{
 		$res = "2 ";
-		if ($this->accountNumber !== null) {
-			$res .= Abo::formatAccountNumber($this->accountNumber, $this->accountPrefix) . " ";
+		if ($this->senderAccountNumber !== null) {
+			$res .= Abo::formatAccountNumber($this->senderAccountNumber, $this->semderAccountPrefix) . " ";
 		}
 		if ($this->dueDate === null) {
 			$this->setDate();
@@ -73,7 +73,7 @@ class Group
 		$res .= sprintf("%014d %s", $this->getAmount(), $this->dueDate);
 		$res .= "\r\n";
 		foreach ($this->items as $item) {
-			$res .= $item->generate($this->accountNumber != null);
+			$res .= $item->generate($this->senderAccountNumber !== null);
 		}
 		$res .= "3 +\r\n";
 		return $res;
