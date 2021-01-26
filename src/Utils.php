@@ -18,7 +18,7 @@ class Utils
 			}
 			$res .= $prefix . '-';
 		}
-		if (!is_numeric($number) || strlen($prefix) > 10) {
+		if (!is_numeric($number) || strlen($number) > 10) {
 			throw new InvalidArgumentException('Parameter $number must be numeric string of max length 10!');
 		}
 
