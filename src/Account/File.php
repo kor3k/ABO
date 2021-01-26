@@ -4,19 +4,23 @@ namespace snoblucha\Abo\Account;
 
 use InvalidArgumentException;
 use snoblucha\Abo\Group;
-use snoblucha\Abo\Item;
 
 class File
 {
 	const TYPE_UHRADA = 1501;
 	const TYPE_INKASO = 1502;
-	const UHRADA = self::TYPE_UHRADA; // BC
-	const INKASO = self::TYPE_INKASO; // BC
 
 
+	/** @var int max 3 numbers */
 	private int $number = 0;
+
+	/** @var int one of self::TYPE_* consts */
 	private int $type = self::TYPE_UHRADA;
+
+	/** @var string sender bank code, 4 chars */
 	private string $bankCode;
+
+	/** @var string 3 chars */
 	private string $bankDepartment = '000';
 
 	/** @var Group[] */
@@ -25,35 +29,13 @@ class File
 
 	public function __construct(int $type = self::TYPE_UHRADA)
 	{
-		$this->type = $type;
-	}
-
-
-	public function generate(): string
-	{
-		$res = sprintf("1 %04d %03d%03d %04d\r\n", $this->type, $this->number, $this->bankDepartment, $this->bankCode);
-		foreach ($this->items as $group) {
-			$res .= $group->generate();
-		}
-		$res .= "5 +\r\n";
-		return $res;
-	}
-
-
-	public function setBankDepartment(string $number): self
-	{
-		$len = 3;
-		if (strlen($number) !== $len || !is_numeric($number)) {
-			throw new InvalidArgumentException("Parameter \$number must be numeric and $len characters long");
-		}
-		$this->bankDepartment = $number;
-		return $this;
+		$this->setType($type);
 	}
 
 
 	/**
-	 * Set number of file.
-	 * @internal Should be called only from Abo::addAccountFile().
+	 * @internal
+	 * Should be called only from Abo::addAccountFile().
 	 */
 	public function setNumber(int $number): self
 	{
@@ -73,9 +55,6 @@ class File
 	}
 
 
-	/**
-	 * Set recipient bank code.
-	 */
 	public function setBankCode(string $bankCode): self
 	{
 		$len = 4;
@@ -87,14 +66,33 @@ class File
 	}
 
 
-	/**
-	 * Add a group to item and return it to set up.
-	 */
+	public function setBankDepartment(string $number): self
+	{
+		$len = 3;
+		if (strlen($number) !== $len || !is_numeric($number)) {
+			throw new InvalidArgumentException("Parameter \$number must be numeric and $len characters long");
+		}
+		$this->bankDepartment = $number;
+		return $this;
+	}
+
+
 	public function addGroup(): Group
 	{
 		$item = new Group();
 		$this->items[] = $item;
 		return $item;
+	}
+
+
+	public function generate(): string
+	{
+		$res = sprintf("1 %04d %03d%03d %04d\r\n", $this->type, $this->number, $this->bankDepartment, $this->bankCode);
+		foreach ($this->items as $group) {
+			$res .= $group->generate();
+		}
+		$res .= "5 +\r\n";
+		return $res;
 	}
 
 
