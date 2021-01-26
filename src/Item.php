@@ -31,10 +31,10 @@ class Item
 	/** @var string max 4(lines)*35 chars */
 	private string $message = '';
 
-	/** @var string recipient account prefix max 6 numbers */
+	/** @var string account prefix max 6 numbers */
 	private string $senderAccountPrefix = '';
 
-	/** @var string recipient account number max 10 numbers */
+	/** @var string account number max 10 numbers */
 	private string $senderAccountNumber = '';
 
 
