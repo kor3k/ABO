@@ -1,6 +1,6 @@
 <?php
 
-namespace snoblucha\Abo\Account;
+namespace snoblucha\Abo;
 
 use InvalidArgumentException;
 use snoblucha\Abo\Group;
@@ -35,7 +35,7 @@ class File
 
 	/**
 	 * @internal
-	 * Should be called only from Abo::addAccountFile().
+	 * Should be called only from Abo::addFile().
 	 */
 	public function setNumber(int $number): self
 	{

@@ -5,7 +5,6 @@ namespace snoblucha\Abo;
 use DateTimeImmutable;
 use DateTimeInterface;
 use InvalidArgumentException;
-use snoblucha\Abo\Account\File;
 
 class Abo
 {
@@ -93,7 +92,7 @@ class Abo
 	}
 
 
-	public function addAccountFile(int $type = File::TYPE_UHRADA): File
+	public function addFile(int $type = File::TYPE_UHRADA): File
 	{
 		$item = new File($type);
 		$this->items[] = $item;
