@@ -30,7 +30,7 @@ class Group
 	}
 
 
-	public function setDate(?DateTimeInterface $date = null): self
+	public function setDueDate(?DateTimeInterface $date = null): self
 	{
 		if ($date === null) {
 			$date = new DateTimeImmutable();
@@ -68,7 +68,7 @@ class Group
 			$res .= Abo::formatAccountNumber($this->senderAccountNumber, $this->semderAccountPrefix) . " ";
 		}
 		if ($this->dueDate === null) {
-			$this->setDate();
+			$this->setDueDate();
 		}
 		$res .= sprintf("%014d %s", $this->getAmount(), $this->dueDate);
 		$res .= "\r\n";
