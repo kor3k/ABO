@@ -17,8 +17,8 @@ class File
 	/** @var int one of self::TYPE_* consts */
 	private int $type = self::TYPE_UHRADA;
 
-	/** @var string sender bank code, 4 chars */
-	private string $bankCode;
+	/** @var string 4 chars */
+	private string $senderBankCode;
 
 	/** @var string 3 chars */
 	private string $bankDepartment = '000';
@@ -55,13 +55,13 @@ class File
 	}
 
 
-	public function setBankCode(string $bankCode): self
+	public function setSenderBankCode(string $bankCode): self
 	{
 		$len = 4;
 		if (strlen($bankCode) !== $len || !is_numeric($bankCode)) {
 			throw new InvalidArgumentException("Parameter \$bankCode must be numeric and $len characters long");
 		}
-		$this->bankCode = $bankCode;
+		$this->senderBankCode = $bankCode;
 		return $this;
 	}
 
@@ -87,7 +87,7 @@ class File
 
 	public function generate(): string
 	{
-		$res = sprintf("1 %04d %03d%03d %04d\r\n", $this->type, $this->number, $this->bankDepartment, $this->bankCode);
+		$res = sprintf("1 %04d %03d%03d %04d\r\n", $this->type, $this->number, $this->bankDepartment, $this->senderBankCode);
 		foreach ($this->items as $group) {
 			$res .= $group->generate();
 		}
