@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace snoblucha\Abo;
 
 use InvalidArgumentException;
-use Nette\Utils\Strings;
+use function Symfony\Component\String\u;
 
 class Utils
 {
@@ -30,7 +30,7 @@ class Utils
 
 	public static function toAscii(string $s): string
 	{
-		return Strings::toAscii($s);
+		return u($s)->ascii()->toString();
 	}
 
 

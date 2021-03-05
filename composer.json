@@ -18,7 +18,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-		"nette/utils": "^3.0",
+		"symfony/string": "^5.2",
 		"php": ">=7.4.0"
 	},
 	"prefer-stable": true,
