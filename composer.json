@@ -1,5 +1,5 @@
 {
-    "name": "sukovf/abo",
+    "name": "kor3k/abo",
     "description": "PHP generator for ABO file format",
     "type": "library",
     "license": "MIT",
@@ -7,6 +7,13 @@
         {
             "name": "Martin Souček",
             "email": "msoucek@seznam.cz"
+        },
+        {
+          "name": "wpj s.r.o",
+          "email": "wpj@wpj.cz"
+        },
+        {
+          "name": "Petr Šnobl"
         }
     ],
     "minimum-stability": "stable",
