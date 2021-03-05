@@ -38,11 +38,19 @@ class Item
 	private string $senderAccountNumber = '';
 
 
-	public function __construct(string $fullAccountNumber, float $amount, string $varSym)
+	public function __construct(string $fullAccountNumber = null, float $amount = null, string $varSym = null)
 	{
-		$this->setAccount($fullAccountNumber)
-			->setAmount($amount)
-			->setVarSym($varSym);
+	    if ($fullAccountNumber) {
+	        $this->setAccount($fullAccountNumber);
+        }
+
+	    if ($amount) {
+	        $this->setAmount($amount);
+        }
+
+	    if ($varSym) {
+	        $this->setVarSym($varSym);
+        }
 	}
 
 
